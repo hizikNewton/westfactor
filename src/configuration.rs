@@ -1,3 +1,9 @@
+#[derive(serde::Deserialize)]
+pub struct Settings {
+    pub database: DatabaseSettings,
+    pub application_port: u16,
+}
+
 
 #[derive(serde::Deserialize)]
 pub struct DatabaseSettings {
@@ -7,6 +13,7 @@ pub struct DatabaseSettings {
     pub host: String,
     pub database_name: String,
 }
+
 
 impl DatabaseSettings {
     pub fn connection_string(&self) -> String {
