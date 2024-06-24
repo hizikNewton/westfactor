@@ -1,21 +1,32 @@
-use actix_rt::net::TcpListener;
-use westfactor::startup::run;
-
+use actix_web::web;
+use sqlx::PgPool;
+use std::net::TcpListener;
+use westfactor::{configuration::get_configuration, startup::run};
 
 struct TestApp {
-    address:String,
-    db_pool:String
+    address: String,
+    db_pool: String,
 }
 
 async fn spawn_app() -> TestApp {
-    let listener = TcpListener::bind("127.0.0.1:0").await.expect("Failed to bind random port");
+    let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind random port");
     // We retrieve the port assigned to us by the OS
     let port = listener.local_addr().unwrap().port();
     let address = format!("http://127.0.0.1:{}", port);
 
-    let connection_pool = configure_database(&configuration.database).await;
+    let mut configuration = get_configuration().expect("Failed to read configuration.");
+    configuration.database.database_name = "testdb".into();
+    let connection_pool = PgPool::connect(&configuration.database.connection_string())
+        .await
+        .expect("Failed to connect to Postgres.");
 
-    let server = run(listener, connection_pool.clone()).expect("Failed to bind address");
+    let shared_data = web::Data::new(AppState {
+        health_check_response: "I'm good. You've already asked me ".to_string(),
+        visit_count: Mutex::new(0),
+        db: connection_pool,
+    });
+
+    let server = run(listener, shared_data).expect("Failed to bind address");
     let _ = actix_rt::spawn(server);
     TestApp {
         address,
