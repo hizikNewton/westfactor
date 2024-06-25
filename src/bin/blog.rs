@@ -1,13 +1,10 @@
 
-#[path = "../blog/state.rs"]
-mod state;
 
 use std::{env, io, net::TcpListener, sync::Mutex};
 use actix_web::web;
 use dotenv::dotenv;
 use sqlx::PgPool;
-use state::AppState;
-use westfactor::startup::run;
+use westfactor::{startup::run, state::AppState};
 
 
 #[actix_rt::main]

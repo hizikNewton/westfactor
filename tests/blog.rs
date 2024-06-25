@@ -1,11 +1,11 @@
 use actix_web::web;
 use sqlx::PgPool;
-use std::net::TcpListener;
-use westfactor::{configuration::get_configuration, startup::run};
+use std::{net::TcpListener, sync::Mutex};
+use westfactor::{configuration::get_configuration, startup::run, state::AppState};
 
 struct TestApp {
     address: String,
-    db_pool: String,
+    db_pool: PgPool,
 }
 
 async fn spawn_app() -> TestApp {
@@ -23,7 +23,7 @@ async fn spawn_app() -> TestApp {
     let shared_data = web::Data::new(AppState {
         health_check_response: "I'm good. You've already asked me ".to_string(),
         visit_count: Mutex::new(0),
-        db: connection_pool,
+        db: connection_pool.clone(),
     });
 
     let server = run(listener, shared_data).expect("Failed to bind address");
