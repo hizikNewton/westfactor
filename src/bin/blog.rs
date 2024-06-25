@@ -1,5 +1,3 @@
-
-
 use std::{env, io, net::TcpListener, sync::Mutex};
 use actix_web::web;
 use dotenv::dotenv;

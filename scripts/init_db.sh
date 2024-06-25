@@ -17,7 +17,7 @@ fi
 
 
 # Read the config.yaml file
-config_file="../configuration.yaml"
+config_file="configuration.yaml"
 
 # Extract values using yq
 DB_HOST=$(yq e '.database.host' $config_file)
