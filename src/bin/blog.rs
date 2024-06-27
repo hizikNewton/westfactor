@@ -8,6 +8,7 @@ use westfactor::{startup::run, state::AppState};
 #[actix_rt::main]
 pub async fn main() -> io::Result<()> {
     dotenv().ok();
+
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
     let host_address = env::var("HOST_ADDR").expect("host address");
 
