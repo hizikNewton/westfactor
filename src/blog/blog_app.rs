@@ -1,3 +1,12 @@
+use std::{net::TcpListener, sync::Mutex};
+
+use actix_web::{dev::Server, web};
+use sqlx::{postgres::PgPoolOptions, PgPool};
+use westfactor::{
+    configuration::{DatabaseSettings, Settings},
+    startup::run,
+    state::AppState,
+};
 
 pub struct Application {
     port: u16,
@@ -7,7 +16,6 @@ pub struct Application {
 impl Application {
     pub async fn build(configuration: Settings) -> Result<Self, anyhow::Error> {
         let connection_pool = get_connection_pool(&configuration.database);
-        let email_client = configuration.email_client.client();
 
         let address = format!(
             "{}:{}",
@@ -15,15 +23,12 @@ impl Application {
         );
         let listener = TcpListener::bind(address)?;
         let port = listener.local_addr().unwrap().port();
-        let server = run(
-            listener,
-            connection_pool,
-            email_client,
-            configuration.application.base_url,
-            configuration.application.hmac_secret,
-            configuration.redis_uri,
-        )
-        .await?;
+        let shared_data = web::Data::new(AppState {
+            health_check_response: "I'm good. You've already asked me ".to_string(),
+            visit_count: Mutex::new(0),
+            db: connection_pool,
+        });
+        let server = run(listener, shared_data).await?;
 
         Ok(Self { port, server })
     }
@@ -42,4 +47,3 @@ pub fn get_connection_pool(configuration: &DatabaseSettings) -> PgPool {
 }
 
 pub struct ApplicationBaseUrl(pub String);
-

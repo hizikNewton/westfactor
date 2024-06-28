@@ -7,3 +7,4 @@ database:
   username: "ifemi"
   password: "mypassword"
   database_name: "westfactor"
+  require_ssl: false
