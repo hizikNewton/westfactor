@@ -17,7 +17,7 @@ fi
 
 
 # Read the config.yaml file
-config_file="configuration.yaml"
+config_file="configuration/base.yaml"
 
 # Extract values using yq
 DB_HOST=$(yq e '.database.host' $config_file)
@@ -55,7 +55,10 @@ until PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -U "${DB_USER}" -p "${DB_
   sleep 1
 done
 
->&2 echo "Postgres is up and running on port ${DB_PORT} - running migrations now!"
+>&2 echo "Postgres is up and running on port ${DB_PORT}"
+
+>&2 echo "- running migrations now!"
+
 
 export DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
 sqlx database create

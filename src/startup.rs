@@ -1,7 +1,7 @@
 use actix_web::{dev::Server, web::Data, App, HttpServer};
 use std::net::TcpListener;
 
-use crate::routers::routes::general_routes;
+use crate::routers::routes::{general_routes, user_routes};
 
 pub async fn run<T: 'static + Send + Sync>(
     listener: TcpListener,
@@ -14,6 +14,7 @@ pub async fn run<T: 'static + Send + Sync>(
                 EzyTutorError::InvalidInput("Please provide valid Json input".to_string()).into()
             })) */
             .configure(general_routes)
+            .configure(user_routes)
     };
     let server = HttpServer::new(app).listen(listener)?.run();
     Ok(server)

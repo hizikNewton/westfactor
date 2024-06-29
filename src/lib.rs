@@ -4,3 +4,6 @@ pub mod state;
 pub mod routers;
 pub mod handlers;
 pub mod telemetry;
+pub mod models;
+pub mod dbaccess;
+pub mod errors;

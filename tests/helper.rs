@@ -1,4 +1,5 @@
 use actix_web::web;
+use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use std::{net::TcpListener, sync::Mutex};
 use once_cell::sync::Lazy;
@@ -33,17 +34,15 @@ async fn spawn_app() -> TestApp {
 
     let mut configuration = get_configuration().expect("Failed to read configuration.");
     configuration.database.database_name = "testdb".into();
-    let connection_pool = PgPool::connect(&configuration.database.connection_string())
-        .await
-        .expect("Failed to connect to Postgres.");
+    let connection_pool = PgPoolOptions::new().connect_lazy_with(configuration.database.without_db());
 
     let shared_data = web::Data::new(AppState {
         health_check_response: "I'm good. You've already asked me ".to_string(),
         visit_count: Mutex::new(0),
-        db: connection_pool.clone(),
+        db: connection_pool.clone()
     });
 
-    let server = run(listener, shared_data).expect("Failed to bind address");
+    let server = run(listener, shared_data).await.expect("test app server failed");
     let _ = actix_rt::spawn(server);
     TestApp {
         address,
