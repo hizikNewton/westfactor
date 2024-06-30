@@ -41,3 +41,33 @@ pub async fn get_all_user_db(pool: &PgPool) -> Result<Vec<User>, BlogAppError> {
         _ => Ok(users),
     }
 }
+
+pub async fn set_admin_db(
+    pool: &PgPool,
+    user_id: String,
+    admin_status: bool,
+) -> Result<(), BlogAppError> {
+    sqlx::query!(
+        "Update users set isadmin = $1 where user_id = $2",
+        admin_status,
+        user_id
+    )
+    .execute(pool)
+    .await?;
+    Ok(())
+}
+
+pub async fn set_super_admin_db(
+    pool: &PgPool,
+    user_id: String,
+    admin_status: bool,
+) -> Result<(), BlogAppError> {
+    sqlx::query!(
+        "Update users set is_super_admin = $1 where user_id = $2",
+        admin_status,
+        user_id
+    )
+    .execute(pool)
+    .await?;
+    Ok(())
+}

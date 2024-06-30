@@ -10,6 +10,7 @@ pub struct UserObj {
     pub email: String,
     pub password: String,
     pub is_admin: bool,
+    pub is_super_admin: bool,
 }
 
 #[derive(Deserialize,Serialize, Debug, Clone)]
@@ -38,7 +39,8 @@ impl From<web::Json<CreateUser>> for UserObj {
             last_name: new_tutor.last_name.clone(),
             email: new_tutor.email.clone(),
             password: new_tutor.password.clone(),
-            is_admin:false
+            is_admin:false,
+            is_super_admin:false
         }
     }
 }
