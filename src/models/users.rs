@@ -4,7 +4,7 @@ use uuid::Uuid;
 
 #[derive(Deserialize,Serialize, Debug, Clone)]
 pub struct UserObj {
-    pub user_id: String,
+    pub user_id: Uuid,
     pub first_name: String,
     pub last_name: String,
     pub email: String,
@@ -15,7 +15,7 @@ pub struct UserObj {
 
 #[derive(Deserialize,Serialize, Debug, Clone)]
 pub struct User {
-    pub user_id: String,
+    pub user_id: Uuid,
     pub first_name: String,
     pub last_name: String,
     pub email: String,
@@ -34,7 +34,7 @@ pub struct CreateUser {
 impl From<web::Json<CreateUser>> for UserObj {
     fn from(new_tutor: web::Json<CreateUser>) -> Self {
         UserObj {
-            user_id: Uuid::new_v4().to_string(),
+            user_id: Uuid::new_v4(),
             first_name: new_tutor.first_name.clone(),
             last_name: new_tutor.last_name.clone(),
             email: new_tutor.email.clone(),

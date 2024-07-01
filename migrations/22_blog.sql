@@ -14,28 +14,32 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
 -- Alter the users table
 ALTER TABLE users
     ALTER COLUMN user_id SET DATA TYPE UUID USING user_id::UUID,
+    ALTER COLUMN user_id SET NOT NULL,
+    ADD CONSTRAINT unique_user_id UNIQUE (user_id),
     ALTER COLUMN user_id SET DEFAULT uuid_generate_v4(),
-    ALTER COLUMN password SET DATA TYPE VARCHAR(25),  -- Adjusted to VARCHAR(25) as per your script
-    ALTER COLUMN password SET DEFAULT generate_password(12),  -- Adjust the length as needed
+    ALTER COLUMN password SET DATA TYPE VARCHAR(25),
+    ALTER COLUMN password SET DEFAULT generate_password(12),
     ALTER COLUMN password SET NOT NULL;
 
 -- Alter the categories table
 ALTER TABLE categories
     ALTER COLUMN user_id SET DATA TYPE UUID USING user_id::UUID,
-    DROP CONSTRAINT fk_user,  -- Remove the old constraint
-    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ALTER COLUMN user_id SET NOT NULL;
+
+-- Drop and recreate the foreign key constraint
+ALTER TABLE categories
+    DROP CONSTRAINT IF EXISTS fk_user,
+    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE NO ACTION;
 
 
--- Alter the subcategories table
+-- Alter the categories table
 ALTER TABLE subcategories
-    ALTER COLUMN user_id SET DATA TYPE UUID USING user_id::UUID,
-    ALTER COLUMN user_id SET NOT NULL;
-  
--- Alter the posts table
+    ALTER COLUMN user_id SET DATA TYPE UUID USING user_id::UUID;
+
+-- Alter the categories table
 ALTER TABLE posts
-    ALTER COLUMN user_id SET DATA TYPE UUID USING user_id::UUID,
-    ALTER COLUMN user_id SET NOT NULL;
- 
+    ALTER COLUMN user_id SET DATA TYPE UUID USING user_id::UUID;

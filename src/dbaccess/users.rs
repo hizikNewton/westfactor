@@ -3,6 +3,7 @@ use crate::{
     models::users::{User, UserObj},
 };
 use sqlx::{self, PgPool};
+use uuid::Uuid;
 
 pub async fn post_new_user_db(pool: &PgPool, new_user: UserObj) -> Result<User, BlogAppError> {
     let user_row = sqlx::query!(
@@ -28,7 +29,7 @@ pub async fn get_all_user_db(pool: &PgPool) -> Result<Vec<User>, BlogAppError> {
     let users: Vec<User> = user_row
         .iter()
         .map(|u| User {
-            user_id: u.user_id.clone(),
+            user_id: u.user_id,
             first_name: u.first_name.clone(),
             last_name: u.last_name.clone(),
             email: u.email.clone(),
@@ -44,7 +45,7 @@ pub async fn get_all_user_db(pool: &PgPool) -> Result<Vec<User>, BlogAppError> {
 
 pub async fn set_admin_db(
     pool: &PgPool,
-    user_id: String,
+    user_id: Uuid,
     admin_status: bool,
 ) -> Result<(), BlogAppError> {
     sqlx::query!(
@@ -59,7 +60,7 @@ pub async fn set_admin_db(
 
 pub async fn set_super_admin_db(
     pool: &PgPool,
-    user_id: String,
+    user_id: Uuid,
     admin_status: bool,
 ) -> Result<(), BlogAppError> {
     sqlx::query!(
