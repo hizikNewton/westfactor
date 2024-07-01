@@ -3,6 +3,7 @@ pub mod configuration;
 pub mod state;
 pub mod routers;
 pub mod handlers;
+pub mod types;
 pub mod telemetry;
 pub mod models;
 pub mod dbaccess;

@@ -1,9 +1,8 @@
-use crate::dbaccess::users::*;
+use crate::{dbaccess::users::*, types::users::AdminStatus};
 use crate::errors::BlogAppError;
 use crate::models::users::CreateUser;
 use crate::state::AppState;
 use actix_web::{web, HttpResponse};
-use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 pub async fn post_new_user(
@@ -22,10 +21,6 @@ pub async fn get_all_users(app_state: web::Data<AppState>) -> Result<HttpRespons
 }
 
 
-#[derive(Deserialize,Serialize, Debug, Clone)]
-pub struct AdminStatus {
-    status: bool,
-}
 
 
 pub async fn set_admin(
